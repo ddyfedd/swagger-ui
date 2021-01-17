@@ -39,8 +39,9 @@
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "https://idratherbewriting.com/learnapidoc/docs/rest_api_specifications/openapi_openweathermap.yml",
+        url: "openweathermap_api.yaml",
         dom_id: '#swagger-ui',
+        defaultModelsExpandDepth: -1,
         deepLinking: true,
         presets: [
           SwaggerUIBundle.presets.apis,
