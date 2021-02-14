@@ -1,0 +1,574 @@
+swagger: '2.0'
+info:
+  description: |-
+    Delivers all the consented payment accounts for a specific Rabobank customer.
+
+    NOTE: To use this API a valid TLS certificate is reuqired.
+
+    **NOTE**: To use this API a valid TLS certificate is required.
+  version: 4.0.8
+  title: Accounts AIS
+  x-ibm-name: accounts-ais
+basePath: /payments/account-information/ais
+schemes:
+  - https
+produces:
+  - application/json
+security:
+  - clientId: []
+    oauth2 access code flow:
+      - ais.balances.read
+  - clientId: []
+    oauth2 access code flow:
+      - ais.transactions.read-90days
+  - clientId: []
+    oauth2 access code flow:
+      - ais.transactions.read-history
+paths:
+  /accounts:
+    get:
+      summary: Read Account List
+      description: Delivers all the consented payments accounts for a specific Rabobank customer.
+      operationId: GET-accounts
+      parameters:
+        - name: TPP-Signature-Certificate
+          in: header
+          description: The certificate used for signing the request.
+          required: true
+          type: string
+          format: byte
+          x-example: MIIDkDCCAnigAwIBAgIEWs3AJDANBgkqhkiG9w0BAQsFADCBiTELMAkGA1UEBhMCTkwxEDAOBgNVBAgMB1V0cmVjaHQxEDAOBgNVBAcMB1V0cmVjaHQxETAPBgNVBAoMCFJhYm9iYW5rMRwwGgYDVQQLDBNPbmxpbmUgVHJhbnNhY3Rpb25zMSUwIwYDVQQDDBxQU0QyIEFQSSBQSSBTZXJ2aWNlcyBTYW5kYm94MB4XDTE4MDQxMTA3NTgyOFoXDTIzMDQxMTA3NTgyOFowgYkxCzAJBgNVBAYTAk5MMRAwDgYDVQQIDAdVdHJlY2h0MRAwDgYDVQQHDAdVdHJlY2h0MREwDwYDVQQKDAhSYWJvYmFuazEcMBoGA1UECwwTT25saW5lIFRyYW5zYWN0aW9uczElMCMGA1UEAwwcUFNEMiBBUEkgUEkgU2VydmljZXMgU2FuZGJveDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANoAjqGWUgCIm2F+0sBSEwLal+T3u+uldLikpxHCB8iL1GD7FrRjcA+MVsxhvHly7vRsHK+tQyMSaeK782RHpY33qxPLc8LmoQLb2EuiQxXj9POYkYBQ74qkrZnvKVlR3WoyQWeDOXnSY2wbNFfkP8ET4ElwyuIIEriwYhab0OIrnnrO8X82/SPZxHwEd3aQjQ6uhiw8paDspJbS5WjEfuwY16KVVUYlhbtAwGjvc6aK0NBm+LH9fMLpAE6gfGZNy0gzMDorVNbkQK1IoAGD8p9ZHdB0F3FwkILEjUiQW6nK+/fKDNJ0TBbpgZUpY8bR460qzxKdeZ1yPDqX2Cjh6fkCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAYL4iD6noMJAt63kDED4RB2mII/lssvHhcxuDpOm3Ims9urubFWEpvV5TgIBAxy9PBinOdjhO1kGJJnYi7F1jv1qnZwTV1JhYbvxv3+vk0jaiu7Ew7G3ASlzruXyMhN6t6jk9MpaWGl5Uw1T+gNRUcWQRR44g3ahQRIS/UHkaV+vcpOa8j186/1X0ULHfbcVQk4LMmJeXqNs8sBAUdKU/c6ssvj8jfJ4SfrurcBhY5UBTOdQOXTPY85aU3iFloerx7Oi9EHewxInOrU5XzqqTz2AQPXezexVeAQxP27lzqCmYC7CFiam6QBr06VebkmnPLfs76n8CDc1cwE6gUl0rMA==
+        - name: PSU-IP-Address
+          in: header
+          description: |
+            The forwarded IP Address header field consists of the corresponding HTTP request
+            IP Address field between PSU and TPP.
+            It shall be contained if and only if this request was actively initiated by the PSU.
+          required: false
+          type: string
+        - name: X-Request-ID
+          in: header
+          description: 'ID of the request, unique to the call, as determined by the initiating party. Format is UUID v4. Example: 594d27d0-26d7-47dc-9d62-c307616220b6'
+          required: true
+          type: string
+          format: uuid
+        - name: Digest
+          in: header
+          description: For description and examples check the documentation section.
+          required: true
+          type: string
+        - name: Signature
+          in: header
+          description: For description and examples check the documentation section.
+          required: true
+          type: string
+        - name: Date
+          in: header
+          description: 'Date header as described in RFC-2616 section 3.3.1. Example: Tue, 15 Nov 1994 08:12:31 GMT'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/accountList'
+        '400':
+          description: Bad Request
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '401':
+          description: Unauthorized
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '403':
+          description: Forbidden
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '404':
+          description: Not found
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '405':
+          description: Method Not Allowed
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '406':
+          description: Not Acceptable
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '408':
+          description: Request Timeout
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '415':
+          description: Unsupported Media Type
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '429':
+          description: Too Many Requests
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '500':
+          description: Internal Server Error
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '503':
+          description: Service Unavailable
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+  '/accounts/{account-id}':
+    get:
+      summary: Read Account Details
+      description: Delivers all the consented payments accounts for a specific Rabobank customer.
+      operationId: GET-accounts-account-id
+      parameters:
+        - name: account-id
+          in: path
+          description: |
+            This identification is denoting the addressed account.
+            The account-id is retrieved by using a "Read Account List" call.
+            The account-id is the "id" attribute of the account structure.
+            Its value is constant at least throughout the lifecycle of a given consent.
+          required: true
+          type: string
+        - name: TPP-Signature-Certificate
+          in: header
+          description: The certificate used for signing the request.
+          required: true
+          type: string
+          format: byte
+          x-example: MIIDkDCCAnigAwIBAgIEWs3AJDANBgkqhkiG9w0BAQsFADCBiTELMAkGA1UEBhMCTkwxEDAOBgNVBAgMB1V0cmVjaHQxEDAOBgNVBAcMB1V0cmVjaHQxETAPBgNVBAoMCFJhYm9iYW5rMRwwGgYDVQQLDBNPbmxpbmUgVHJhbnNhY3Rpb25zMSUwIwYDVQQDDBxQU0QyIEFQSSBQSSBTZXJ2aWNlcyBTYW5kYm94MB4XDTE4MDQxMTA3NTgyOFoXDTIzMDQxMTA3NTgyOFowgYkxCzAJBgNVBAYTAk5MMRAwDgYDVQQIDAdVdHJlY2h0MRAwDgYDVQQHDAdVdHJlY2h0MREwDwYDVQQKDAhSYWJvYmFuazEcMBoGA1UECwwTT25saW5lIFRyYW5zYWN0aW9uczElMCMGA1UEAwwcUFNEMiBBUEkgUEkgU2VydmljZXMgU2FuZGJveDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANoAjqGWUgCIm2F+0sBSEwLal+T3u+uldLikpxHCB8iL1GD7FrRjcA+MVsxhvHly7vRsHK+tQyMSaeK782RHpY33qxPLc8LmoQLb2EuiQxXj9POYkYBQ74qkrZnvKVlR3WoyQWeDOXnSY2wbNFfkP8ET4ElwyuIIEriwYhab0OIrnnrO8X82/SPZxHwEd3aQjQ6uhiw8paDspJbS5WjEfuwY16KVVUYlhbtAwGjvc6aK0NBm+LH9fMLpAE6gfGZNy0gzMDorVNbkQK1IoAGD8p9ZHdB0F3FwkILEjUiQW6nK+/fKDNJ0TBbpgZUpY8bR460qzxKdeZ1yPDqX2Cjh6fkCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAYL4iD6noMJAt63kDED4RB2mII/lssvHhcxuDpOm3Ims9urubFWEpvV5TgIBAxy9PBinOdjhO1kGJJnYi7F1jv1qnZwTV1JhYbvxv3+vk0jaiu7Ew7G3ASlzruXyMhN6t6jk9MpaWGl5Uw1T+gNRUcWQRR44g3ahQRIS/UHkaV+vcpOa8j186/1X0ULHfbcVQk4LMmJeXqNs8sBAUdKU/c6ssvj8jfJ4SfrurcBhY5UBTOdQOXTPY85aU3iFloerx7Oi9EHewxInOrU5XzqqTz2AQPXezexVeAQxP27lzqCmYC7CFiam6QBr06VebkmnPLfs76n8CDc1cwE6gUl0rMA==
+        - name: PSU-IP-Address
+          in: header
+          description: |
+            The forwarded IP Address header field consists of the corresponding HTTP request
+            IP Address field between PSU and TPP.
+            It shall be contained if and only if this request was actively initiated by the PSU.
+          required: false
+          type: string
+        - name: X-Request-ID
+          in: header
+          description: 'ID of the request, unique to the call, as determined by the initiating party. Format is UUID v4. Example: 594d27d0-26d7-47dc-9d62-c307616220b6'
+          required: true
+          type: string
+          format: uuid
+        - name: Digest
+          in: header
+          description: For description and examples check the documentation section.
+          required: true
+          type: string
+        - name: Signature
+          in: header
+          description: For description and examples check the documentation section.
+          required: true
+          type: string
+        - name: Date
+          in: header
+          description: 'Date header as described in RFC-2616 section 3.3.1. Example: Tue, 15 Nov 1994 08:12:31 GMT'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/accountDetails'
+        '400':
+          description: Bad Request
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '401':
+          description: Unauthorized
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '403':
+          description: Forbidden
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '404':
+          description: Not found
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '405':
+          description: Method Not Allowed
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '406':
+          description: Not Acceptable
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '408':
+          description: Request Timeout
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '415':
+          description: Unsupported Media Type
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '429':
+          description: Too Many Requests
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+          schema:
+            $ref: '#/definitions/error_AIS'
+        '500':
+          description: Internal Server Error
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+        '503':
+          description: Service Unavailable
+          headers:
+            X-Request-ID:
+              type: string
+              format: uuid
+              description: 'ID of the request, unique to the call, as determined by the initiating party.'
+securityDefinitions:
+  oauth2 access code flow:
+    description: NOTE Please use the Authorization and Token URL as provided by the oAuth2 Services
+    type: oauth2
+    authorizationUrl: 'https://api.rabobank.nl/openapi/oauth2/authorize'
+    tokenUrl: 'https://api.rabobank.nl/openapi/oauth2/token'
+    flow: accessCode
+    scopes:
+      ais.balances.read: 'Allows the retrieval of the current balance of an account. NOTE: This scope grants access for a maximum of 90 days and will automatically be invalidated.'
+      ais.transactions.read-90days: 'Allows the retrieval of transaction from the last 90 days. NOTE: This scope grants access for a maximum of 90 days and will automatically be invalidated.'
+      ais.transactions.read-history: Allows the retrieval of transaction history once
+  clientId:
+    type: apiKey
+    description: ClientId as provided by the Rabobank developer portal.
+    in: header
+    name: X-IBM-Client-Id
+definitions:
+  _linksAccountDetails:
+    type: object
+    properties:
+      account:
+        description: A link to the resource providing the details of a dedicated account.
+        $ref: '#/definitions/_linksHref'
+      balances:
+        description: A link to the resource providing the balance of a dedicated account.
+        $ref: '#/definitions/_linksHref'
+      transactions:
+        description: A link to the resource providing the transaction history of a dedicated account.
+        $ref: '#/definitions/_linksHref'
+    description: |
+      Links to the account, which can be directly used for retrieving account information from this dedicated account.
+      Links to "balances" and/or "transactions"
+      These links are only supported, when the corresponding consent has been already granted.
+  _linksHref:
+    properties:
+      href:
+        type: string
+        example: '/accounts/dW9od2VIVUhGVypIZHVpaGRhdWR3OGRoY[/|/transactions|/balances]'
+        description: A link to the resource providing the details of a dedicated account.
+  accountDetails:
+    type: object
+    required:
+      - currency
+      - iban
+      - resourceId
+      - status
+    properties:
+      _links:
+        $ref: '#/definitions/_linksAccountDetails'
+      currency:
+        $ref: '#/definitions/currencyCode'
+      iban:
+        $ref: '#/definitions/iban'
+      ownerName:
+        type: string
+      resourceId:
+        type: string
+        example: dW9od2VIVUhGVypIZHVpaGRhdWR3OGRoY
+        description: Account id.
+        maxLength: 100
+      status:
+        $ref: '#/definitions/accountStatus'
+    description: |
+      The ASPSP shall give at least one of the account reference identifiers:
+
+        - iban
+
+        - bban
+
+      If the account is a multicurrency account currency code in "currency" is set to "XXX".
+  accountList:
+    type: object
+    required:
+      - accounts
+    properties:
+      accounts:
+        type: array
+        items:
+          $ref: '#/definitions/accountDetails'
+    description: |
+      List of accounts with details.
+  accountStatus:
+    type: string
+    description: |
+      Account status. The value is one of the following:
+
+        - "enabled": account is available
+
+        - "deleted": account is terminated
+
+        - "blocked": account is blocked e.g. for legal reasons
+
+      If this field is not used, than the account is available in the sense of this specification.
+    example: enabled
+    enum:
+      - enabled
+      - deleted
+      - blocked
+  currencyCode:
+    type: string
+    pattern: '[A-Z]{3}'
+    description: |
+      ISO 4217 Alpha 3 currency code
+    example: EUR
+  iban:
+    type: string
+    pattern: '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'
+    description: IBAN of an account
+    example: NL05RABO0812836782
+  errorInformationCode:
+    type: string
+    description: Message code to explain the nature of the underlying error
+    example: CERTIFICATE_INVALID
+    enum:
+      - SESSIONS_NOT_SUPPORTED
+      - ACCESS_EXCEEDED
+      - REQUESTED_FORMATS_INVALID
+      - CERTIFICATE_INVALID
+      - CERTIFICATE_EXPIRED
+      - CERTIFICATE_BLOCKED
+      - CERTIFICATE_REVOKED
+      - CERTIFICATE_MISSING
+      - SIGNATURE_INVALID
+      - SIGNATURE_MISSING
+      - FORMAT_ERROR
+      - PARAMETER_NOT_SUPPORTED
+      - PSU_CREDENTIALS_INVALID
+      - SERVICE_INVALID
+      - SERVICE_BLOCKED
+      - CORPORATE_ID_INVALID
+      - CONSENT_UNKNOWN
+      - CONSENT_INVALID
+      - CONSENT_EXPIRED
+      - TOKEN_UNKNOWN
+      - TOKEN_INVALID
+      - TOKEN_EXPIRED
+      - RESOURCE_UNKNOWN
+      - RESOURCE_EXPIRED
+      - TIMESTAMP_INVALID
+      - PERIOD_INVALID
+      - SCA_METHOD_UNKNOWN
+  tppErrorTitle:
+    type: string
+    maxLength: 70
+    description: |
+      Short  description of error type.
+  tppErrorDetail:
+    type: string
+    maxLength: 500
+    description: |
+      Detailed human readable text specific to this instance of the error.
+      XPath might be used to point to the issue generating the error in addition.
+  error_AIS:
+    type: object
+    required:
+      - code
+      - type
+    properties:
+      type:
+        type: string
+        format: uri
+        description: |
+          A URI reference [RFC3986] that identifies the problem type.
+          Remark For Future: These URI will be provided by NextGenPSD2 in future.
+        maxLength: 70
+      title:
+        type: string
+        description: |
+          Short human readable description of error type.
+          Could be in local language.
+          To be provided by ASPSPs.
+        maxLength: 70
+      detail:
+        type: string
+        description: |
+          Detailed human readable text specific to this instance of the error.
+          XPath might be used to point to the issue generating the error in addition.
+        maxLength: 512
+      code:
+        $ref: '#/definitions/errorInformationCode'
+      additionalErrors:
+        type: array
+        description: |
+          Array of Error Information Blocks.
+          Might be used if more than one error is to be communicated
+        items:
+          type: object
+          description: 'This is a data element to support the declaration of additional errors in the context of [RFC7807].'
+          properties:
+            title:
+              $ref: '#/definitions/tppErrorTitle'
+            detail:
+              $ref: '#/definitions/tppErrorDetail'
+            code:
+              $ref: '#/definitions/errorInformationCode'
+          required:
+            - code
+      _links:
+        $ref: '#/definitions/_linksAll'
+    description: 'Standardised definition of reporting error information according to [RFC7807]'
+  _linksAll:
+    type: object
+    properties:
+      self:
+        $ref: '#/definitions/hrefType'
+      status:
+        $ref: '#/definitions/hrefType'
+      scaStatus:
+        $ref: '#/definitions/hrefType'
+      account:
+        $ref: '#/definitions/hrefType'
+      balances:
+        $ref: '#/definitions/hrefType'
+      transactions:
+        $ref: '#/definitions/hrefType'
+      transactionDetails:
+        $ref: '#/definitions/hrefType'
+      first:
+        $ref: '#/definitions/hrefType'
+      next:
+        $ref: '#/definitions/hrefType'
+      previous:
+        $ref: '#/definitions/hrefType'
+      last:
+        $ref: '#/definitions/hrefType'
+      download:
+        $ref: '#/definitions/hrefType'
+    description: |
+      A _link object with all available link types.
+    additionalProperties:
+      $ref: '#/definitions/hrefType'
+  hrefEntry:
+    type: string
+    description: Link to a resource.
+    example: /accounts/3fdhzart4fsadsdfg45hdgh/balance
+  hrefType:
+    type: object
+    properties:
+      href:
+        $ref: '#/definitions/hrefEntry'
+    description: Link to a resource.
+x-ibm-configuration:
+  enforced: true
+  phase: realized
+  testable: false
+  application-authentication:
+    certificate: true
+x-ibm-endpoints:
+  - endpointUrl: 'https://api.rabobank.nl/openapi'
+    description: Base Gateway API Endpoint
+    type:
+      - Production
